@@ -18,13 +18,17 @@ struct WIN32_API_Function {
 	WIN32_API_Function(string name, unsigned int count) : name(name), count(count) {};
 };
 
-void analisefileContent(const string& content, vector<WIN32_API_Function>& win32_api_functions)
+void analyzeFileContent(string fileContent, vector<WIN32_API_Function>& win32_api_functions)
 {
+	// remove all comments
+	regex commentPattern(R"(\/\/.*|\/\*[\s\S]*?\*\/)");
+	fileContent = regex_replace(fileContent, commentPattern, "");
+
 	for (WIN32_API_Function& e : win32_api_functions) {
-		size_t pos = content.find(e.name);
+		size_t pos = fileContent.find(e.name);
 		while (pos != std::string::npos) {
 			e.count++;
-			pos = content.find(e.name, pos + e.name.length());
+			pos = fileContent.find(e.name, pos + e.name.length());
 		}
 	}
 }
@@ -137,7 +141,6 @@ int wmain(int argc, wchar_t* argv[])
 	// read the file with WIN32-API functions
 	vector<WIN32_API_Function> Win32_API_functions;
 	Win32_API_functions.reserve(2300);
-	string fileContent;
 	const wchar_t* Win32_API_filename = L"Win32-API-functions.txt";
 	ifstream myfile(Win32_API_filename);
 
@@ -154,7 +157,6 @@ int wmain(int argc, wchar_t* argv[])
 
 	// search the Win32-API-functions in the files
 	for (size_t i = 0; i < filesSource.size(); i++) {
-		string fileContent;
 		ifstream myfile(filesSource.at(i));
 
 		if (myfile.is_open()) {
@@ -163,7 +165,7 @@ int wmain(int argc, wchar_t* argv[])
 
 			ostringstream buffer;
 			buffer << myfile.rdbuf();
-			analisefileContent(buffer.str(), Win32_API_functions);
+			analyzeFileContent(buffer.str(), Win32_API_functions);
 
 			myfile.close();
 
