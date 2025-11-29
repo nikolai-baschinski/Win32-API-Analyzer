@@ -15,7 +15,7 @@ using namespace std;
 struct WIN32_API_Function {
 	string name;
 	unsigned int count = 0;
-	WIN32_API_Function(string name, unsigned int count) : name(name), count(count) {};
+	WIN32_API_Function(string name, unsigned int count) : name(name), count(count) {}
 };
 
 void analyzeFileContent(string fileContent, vector<WIN32_API_Function>& win32_api_functions)
@@ -147,7 +147,7 @@ int wmain(int argc, wchar_t* argv[])
 	if (myfile.is_open()) {
 		string line;
 		while (getline(myfile, line)) {
-			Win32_API_functions.emplace_back(WIN32_API_Function(line, 0));
+			Win32_API_functions.emplace_back(line, 0);
 		}
 		myfile.close();
 		wcout << Win32_API_functions.size() << L" functions found in file " << Win32_API_filename << endl;
